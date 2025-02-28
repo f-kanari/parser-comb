@@ -1,7 +1,5 @@
 package main
 
-import "parser"
-
 // GOAL: 四則演算のASTをビルドする
 
 type NodeKind int
@@ -31,12 +29,4 @@ func NewOpNode(op string, left *CalcNode, right *CalcNode) CalcNode {
 	}
 }
 
-func IntNodeParser() parser.Parser[CalcNode] {
-	return parser.New(func(input string) (parser.ParseResult[CalcNode], error) {
-		val, err := parser.Int().Parse(input)
-		if err != nil {
-			return parser.ParseResult[CalcNode]{}, err
-		}
-		return parser.ParseResult[CalcNode]{Parsed: NewIntNode(val.Parsed), Rest: val.Rest}, nil
-	})
-}
+// TODO: implement calcparser
