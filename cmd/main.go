@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"parser"
+)
 
 func main() {
-	fmt.Println("Hello world")
+	input := "++++xxxx"
+	p := parser.Literal("+")
+	repeated := parser.Repeat(p)
+	ret, err := repeated.Parse(input)
+	fmt.Printf("ret=%s, err=%v", ret, err)
 }
