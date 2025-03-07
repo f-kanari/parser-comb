@@ -6,24 +6,6 @@ import (
 	"strings"
 )
 
-// Parserの結果を表現する構造体
-type ParseResult[T any] struct {
-	Parsed T
-	Rest   string
-}
-
-func (res ParseResult[T]) String() string {
-	return fmt.Sprintf("parsed=%v, rest=%s", res.Parsed, res.Rest)
-}
-
-func Result[T any](parsed T, rest string) ParseResult[T] {
-	return ParseResult[T]{Parsed: parsed, Rest: rest}
-}
-
-func Empty[T any]() ParseResult[T] {
-	return ParseResult[T]{}
-}
-
 // go 1.24から
 // ParserFnは、対象をうけとり、解析済みと残りにわける
 // type ParserFn[T any] = func(string) (ParseResult[T], error)

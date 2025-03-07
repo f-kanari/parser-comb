@@ -1,9 +1,13 @@
-package parser
+package types
 
 // Tuple
 type Tuple[A any, B any] struct {
 	fst A
 	snd B
+}
+
+func NewTuple[A any, B any](fst A, snd B) Tuple[A, B] {
+	return Tuple[A, B]{fst: fst, snd: snd}
 }
 
 func (t Tuple[A, B]) Fst() A {
@@ -16,21 +20,21 @@ func (t Tuple[A, B]) Snd() B {
 
 // Either
 type Either[A any, B any] struct {
-	left  Maybe[A]
-	right Maybe[B]
+	left  Option[A]
+	right Option[B]
 }
 
 func Left[A any, B any](val A) Either[A, B] {
 	return Either[A, B]{
-		left:  Just(val),
-		right: Nothing[B](),
+		left:  Some(val),
+		right: None[B](),
 	}
 }
 
 func Right[A any, B any](val B) Either[A, B] {
 	return Either[A, B]{
-		left:  Nothing[A](),
-		right: Just(val),
+		left:  None[A](),
+		right: Some(val),
 	}
 }
 
@@ -42,16 +46,16 @@ func (e Either[A, B]) Right() (B, bool) {
 	return e.right.val, e.right.valid
 }
 
-// Maybe(Optional)
-type Maybe[A any] struct {
+// Option
+type Option[A any] struct {
 	val   A
 	valid bool
 }
 
-func Just[A any](val A) Maybe[A] {
-	return Maybe[A]{val: val, valid: true}
+func Some[A any](val A) Option[A] {
+	return Option[A]{val: val, valid: true}
 }
 
-func Nothing[A any]() Maybe[A] {
-	return Maybe[A]{valid: false}
+func None[A any]() Option[A] {
+	return Option[A]{valid: false}
 }
