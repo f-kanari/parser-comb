@@ -2,6 +2,8 @@ package parser
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 )
 
 // Parserの結果を表現する構造体
@@ -33,4 +35,34 @@ func New[T any](fn func(string) (ParseResult[T], error)) Parser[T] {
 
 func (p Parser[T]) Parse(input string) (ParseResult[T], error) {
 	return p.fn(input)
+}
+
+// basic parser
+func Literal(expected string) Parser[string] {
+	return New(func(s string) (ParseResult[string], error) {
+		if !strings.HasPrefix(s, expected) {
+			return Empty[string](), fmt.Errorf("%s expected but got %s", expected, s)
+		}
+		return Result(expected, s[len(expected):]), nil
+	})
+}
+
+func Digit() Parser[int] {
+	return New(func(s string) (ParseResult[int], error) {
+		chars := []rune{}
+		for _, c := range s {
+			if c < '0' || '9' < c {
+				break
+			}
+			chars = append(chars, c)
+		}
+		if len(chars) == 0 {
+			return Empty[int](), fmt.Errorf("integer expected but got %s", s)
+		}
+		num, err := strconv.Atoi(string(chars))
+		if err != nil {
+			return Empty[int](), err
+		}
+		return Result(num, s[len(chars):]), nil
+	})
 }

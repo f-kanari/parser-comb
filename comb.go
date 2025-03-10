@@ -41,12 +41,27 @@ func Right[A any, B any](p1 Parser[A], p2 Parser[B]) Parser[B] {
 	})
 }
 
-func Repeat[A any](p Parser[A]) Parser[[]A] {
+func Many0[A any](p Parser[A]) Parser[[]A] {
 	return New(func(s string) (ParseResult[[]A], error) {
 		results := []A{}
 		for ret, err := p.Parse(s); err != nil; {
 			results = append(results, ret.Parsed)
 			s = ret.Rest
+		}
+		return Result(results, s), nil
+	})
+}
+
+func Many1[A any](p Parser[A]) Parser[[]A] {
+	return New(func(s string) (ParseResult[[]A], error) {
+		results := []A{}
+		ret, err := p.Parse(s)
+		if err != nil {
+			return Empty[[]A](), err
+		}
+
+		for ret, err := p.Parse(ret.Rest); err != nil; {
+			results = append(results, ret.Parsed)
 		}
 		return Result(results, s), nil
 	})
