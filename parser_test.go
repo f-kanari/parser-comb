@@ -20,6 +20,21 @@ func TestLiteral(t *testing.T) {
 	}
 }
 
+func TestLiteralFail(t *testing.T) {
+	p := Literal("test")
+	input := "different input"
+	expected := Empty[string]()
+	// act
+	actual, err := p.Parse(input)
+	// assert
+	if actual != expected {
+		t.Errorf("%v expected but got %v", expected, actual)
+	}
+	if err == nil {
+		t.Errorf("error must be NOT nil")
+	}
+}
+
 func TestDigit(t *testing.T) {
 	// arrange
 	p := Digit()
@@ -33,5 +48,21 @@ func TestDigit(t *testing.T) {
 	}
 	if err != nil {
 		t.Errorf("error must be nil but got %v", err)
+	}
+}
+
+func TestDigitFail(t *testing.T) {
+	// arrange
+	p := Digit()
+	input := "x100"
+	expected := Empty[int]()
+	// act
+	actual, err := p.Parse(input)
+	// assert
+	if actual != expected {
+		t.Errorf("%v expected but got %v", expected, actual)
+	}
+	if err == nil {
+		t.Errorf("error must be NOT nil")
 	}
 }
