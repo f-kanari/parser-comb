@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -64,5 +65,15 @@ func Digit() Parser[int] {
 			return Empty[int](), err
 		}
 		return Result(num, s[len(chars):]), nil
+	})
+}
+
+func AnyChar() Parser[rune] {
+	return New(func(s string) (ParseResult[rune], error) {
+		chars := []rune(s[:1])
+		if len(chars) == 0 {
+			return Empty[rune](), errors.New("empty string")
+		}
+		return Result(chars[0], s[1:]), nil
 	})
 }

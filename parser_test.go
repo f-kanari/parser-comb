@@ -2,6 +2,8 @@ package parser
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLiteral(t *testing.T) {
@@ -12,12 +14,8 @@ func TestLiteral(t *testing.T) {
 	// act
 	actual, err := p.Parse(input)
 	// assert
-	if actual != expected {
-		t.Errorf("%v expected but got %v", expected, actual)
-	}
-	if err != nil {
-		t.Errorf("error must be nil but got %v", err)
-	}
+	assert.Equal(t, expected, actual)
+	assert.NoError(t, err)
 }
 
 func TestLiteralFail(t *testing.T) {
@@ -27,12 +25,8 @@ func TestLiteralFail(t *testing.T) {
 	// act
 	actual, err := p.Parse(input)
 	// assert
-	if actual != expected {
-		t.Errorf("%v expected but got %v", expected, actual)
-	}
-	if err == nil {
-		t.Errorf("error must be NOT nil")
-	}
+	assert.Equal(t, expected, actual)
+	assert.Error(t, err)
 }
 
 func TestDigit(t *testing.T) {
@@ -43,12 +37,8 @@ func TestDigit(t *testing.T) {
 	// act
 	actual, err := p.Parse(input)
 	// assert
-	if actual != expected {
-		t.Errorf("%v expected but got %v", expected, actual)
-	}
-	if err != nil {
-		t.Errorf("error must be nil but got %v", err)
-	}
+	assert.Equal(t, expected, actual)
+	assert.NoError(t, err)
 }
 
 func TestDigitFail(t *testing.T) {
@@ -59,10 +49,6 @@ func TestDigitFail(t *testing.T) {
 	// act
 	actual, err := p.Parse(input)
 	// assert
-	if actual != expected {
-		t.Errorf("%v expected but got %v", expected, actual)
-	}
-	if err == nil {
-		t.Errorf("error must be NOT nil")
-	}
+	assert.Equal(t, expected, actual)
+	assert.Error(t, err)
 }

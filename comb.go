@@ -44,11 +44,16 @@ func Right[A any, B any](p1 Parser[A], p2 Parser[B]) Parser[B] {
 func Many0[A any](p Parser[A]) Parser[[]A] {
 	return New(func(s string) (ParseResult[[]A], error) {
 		results := []A{}
-		for ret, err := p.Parse(s); err != nil; {
+		cur := s
+		for {
+			ret, err := p.Parse(cur)
+			if err != nil {
+				break
+			}
 			results = append(results, ret.Parsed)
-			s = ret.Rest
+			cur = ret.Rest
 		}
-		return Result(results, s), nil
+		return Result(results, cur), nil
 	})
 }
 
@@ -60,10 +65,16 @@ func Many1[A any](p Parser[A]) Parser[[]A] {
 			return Empty[[]A](), err
 		}
 
-		for ret, err := p.Parse(ret.Rest); err != nil; {
+		cur := ret.Rest
+		for {
+			ret, err := p.Parse(cur)
+			if err != nil {
+				break
+			}
 			results = append(results, ret.Parsed)
+			cur = ret.Rest
 		}
-		return Result(results, s), nil
+		return Result(results, cur), nil
 	})
 }
 
