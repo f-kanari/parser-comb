@@ -100,3 +100,26 @@ func Either[A any](p1 Parser[A], p2 Parser[A]) Parser[A] {
 		return r, nil
 	})
 }
+
+func AndThen[A any, B any](p Parser[A], fn func(A) Parser[B]) Parser[B] {
+	return New(func(s string) (ParseResult[B], error) {
+		r, err := p.Parse(s)
+		if err != nil {
+			return Empty[B](), err
+		}
+		return fn(r.Parsed).Parse(r.Rest)
+	})
+}
+
+func OneOf[A any](ps ...Parser[A]) Parser[A] {
+	return New(func(s string) (ParseResult[A], error) {
+		for _, p := range ps {
+			r, err := p.Parse(s)
+			if err != nil {
+				continue
+			}
+			return r, nil
+		}
+		return Empty[A](), fmt.Errorf("all parsers failed: %v", ps)
+	})
+}
