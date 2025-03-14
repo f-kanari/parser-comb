@@ -2,35 +2,48 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"parser/calc"
 	"parser/json"
 	"strings"
 	"unicode"
 )
 
-func main() {
-	calcParser := calc.CalcParser()
-	ret, err := calcParser.Parse("100/4*2+1")
-	if err != nil {
-		fmt.Printf("got err=%v\n", err)
-	}
-	fmt.Printf("parsed=%s\n", ret.Parsed)
-	fmt.Printf("evaled=%d\n", ret.Parsed.Eval())
+const (
+	CALC = "calc"
+	JSON = "json"
+)
 
-	jsonParser := json.JSONParser()
-	input := `
-  {
-    "key": true,
-    "key2": false,
-    "key3": "test",
-    "key4": 10,
-  }
-  `
-	ret2, err := jsonParser.Parse(removeWhitespace(input))
-	if err != nil {
-		fmt.Printf("got err=%v\n", err)
+func main() {
+	if len(os.Args) != 3 {
+		fmt.Fprintf(os.Stderr, "error: invalid args len")
+		return
 	}
-	fmt.Printf("parsed=%v\n", ret2.Parsed)
+	parserType := os.Args[1]
+	input := os.Args[2]
+
+	if parserType == CALC {
+		p := calc.CalcParser()
+		ret, err := p.Parse(input)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "failed to parse: %v\n", err)
+			return
+		}
+		fmt.Printf("%s evaluated into %d\n", ret.Parsed, ret.Parsed.Eval())
+		return
+	}
+
+	if parserType == JSON {
+		input = removeWhitespace(input)
+		p := json.JSONParser()
+		ret, err := p.Parse(input)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error: failed to parse %v\n", err)
+			return
+		}
+		fmt.Printf("json=%s", ret.Parsed)
+		return
+	}
 }
 
 func removeWhitespace(str string) string {
