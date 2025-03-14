@@ -45,10 +45,10 @@ func (j JSON) String() string {
 		}
 		var pairs []string
 		for k, v := range j.Object {
-			pairs = append(pairs, fmt.Sprintf("%q:%s", k, v.String()))
+			pairs = append(pairs, fmt.Sprintf("key=%q:val=%s", k, v.String()))
 		}
 		sort.Strings(pairs) // マップの順序を一定にする
-		return "{" + strings.Join(pairs, ",") + "}"
+		return strings.Join(pairs, "\n")
 	case TypeArray:
 		if len(j.Array) == 0 {
 			return "[]"
@@ -59,13 +59,13 @@ func (j JSON) String() string {
 		}
 		return "[" + strings.Join(elements, ",") + "]"
 	case TypeString:
-		return fmt.Sprintf("%q", j.Str)
+		return fmt.Sprintf("(type=str val=%q)", j.Str)
 	case TypeNumber:
-		return fmt.Sprintf("%d", j.Number)
+		return fmt.Sprintf("(type=num val=%d)", j.Number)
 	case TypeBoolean:
-		return fmt.Sprintf("%v", j.Boolean)
+		return fmt.Sprintf("(type=bool val=%v)", j.Boolean)
 	case TypeNull:
-		return "null"
+		return "(type=null val=null)"
 	default:
 		return "unknown"
 	}
@@ -122,7 +122,7 @@ func JSONParser() parser.Parser[JSON] {
 			),
 			parser.Left(
 				ValueParser(),
-				parser.Literal(","),
+				parser.Opt(parser.Literal(",")),
 			),
 		),
 	)

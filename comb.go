@@ -123,3 +123,13 @@ func Right[A any, B any](p1 Parser[A], p2 Parser[B]) Parser[B] {
 		return tuple.Snd()
 	})
 }
+
+func Opt[A any](p Parser[A]) Parser[types.Option[A]] {
+	return New(func(s string) (ParseResult[types.Option[A]], error) {
+		ret, err := p.Parse(s)
+		if err != nil {
+			return Result(types.None[A](), s), nil
+		}
+		return Result(types.Some(ret.Parsed), ret.Rest), err
+	})
+}

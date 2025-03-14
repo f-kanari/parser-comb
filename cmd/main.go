@@ -41,7 +41,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "error: failed to parse %v\n", err)
 			return
 		}
-		fmt.Printf("json=%s", ret.Parsed)
+		fmt.Printf("---retsult---\n%s", ret.Parsed)
 		return
 	}
 }
