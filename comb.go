@@ -19,28 +19,6 @@ func Pair[A any, B any](p1 Parser[A], p2 Parser[B]) Parser[types.Tuple[A, B]] {
 	})
 }
 
-func Map[A any, B any](p Parser[A], mapFn func(A) B) Parser[B] {
-	return New(func(s string) (ParseResult[B], error) {
-		r, err := p.Parse(s)
-		if err != nil {
-			return Empty[B](), err
-		}
-		return Result(mapFn(r.Parsed), r.Rest), nil
-	})
-}
-
-func Left[A any, B any](p1 Parser[A], p2 Parser[B]) Parser[A] {
-	return Map(Pair(p1, p2), func(tuple types.Tuple[A, B]) A {
-		return tuple.Fst()
-	})
-}
-
-func Right[A any, B any](p1 Parser[A], p2 Parser[B]) Parser[B] {
-	return Map(Pair(p1, p2), func(tuple types.Tuple[A, B]) B {
-		return tuple.Snd()
-	})
-}
-
 func Many0[A any](p Parser[A]) Parser[[]A] {
 	return New(func(s string) (ParseResult[[]A], error) {
 		results := []A{}
@@ -121,5 +99,27 @@ func OneOf[A any](ps ...Parser[A]) Parser[A] {
 			return r, nil
 		}
 		return Empty[A](), fmt.Errorf("all parsers failed: %v", ps)
+	})
+}
+
+func Map[A any, B any](p Parser[A], mapFn func(A) B) Parser[B] {
+	return New(func(s string) (ParseResult[B], error) {
+		r, err := p.Parse(s)
+		if err != nil {
+			return Empty[B](), err
+		}
+		return Result(mapFn(r.Parsed), r.Rest), nil
+	})
+}
+
+func Left[A any, B any](p1 Parser[A], p2 Parser[B]) Parser[A] {
+	return Map(Pair(p1, p2), func(tuple types.Tuple[A, B]) A {
+		return tuple.Fst()
+	})
+}
+
+func Right[A any, B any](p1 Parser[A], p2 Parser[B]) Parser[B] {
+	return Map(Pair(p1, p2), func(tuple types.Tuple[A, B]) B {
+		return tuple.Snd()
 	})
 }
